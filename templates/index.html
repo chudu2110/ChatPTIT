@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PTIT Admission Chatbot</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+
+html, body {
+  height: 100%;
+}
+
+body{
+  background:#f7f7f8;
+}
+
+#sidebar.sidebar-collapsed{
+  width: 4.25rem;
+}
+
+#sidebar.sidebar-collapsed #sidebar-collapse-btn{
+  display: none !important;
+}
+
+#sidebar-logo-btn{
+  position: relative;
+}
+
+#sidebar-logo-img{
+  transition: opacity 160ms cubic-bezier(.2,.8,.2,1), transform 160ms cubic-bezier(.2,.8,.2,1);
+  will-change: opacity, transform;
+  pointer-events: none;
+}
+
+#sidebar-logo-expand{
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  opacity: 0;
+  transform: scale(.78) rotate(-10deg);
+  transition: opacity 160ms cubic-bezier(.2,.8,.2,1), transform 160ms cubic-bezier(.2,.8,.2,1);
+  will-change: opacity, transform;
+  pointer-events: none;
+}
+
+#sidebar.sidebar-collapsed #sidebar-logo-btn{
+  cursor: pointer;
+}
+
+#sidebar.sidebar-collapsed #sidebar-logo-btn:hover{
+  background: rgb(243 244 246);
+}
+
+#sidebar.sidebar-collapsed #sidebar-logo-btn:hover #sidebar-logo-img{
+  opacity: 0;
+  transform: scale(.92);
+}
+
+#sidebar.sidebar-collapsed #sidebar-logo-btn:hover #sidebar-logo-expand{
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+#sidebar.sidebar-collapsed .sidebar-text{
+  display: none;
+}
+
+#sidebar.sidebar-collapsed .sidebar-action{
+  justify-content: center;
+}
+
+#sidebar.sidebar-collapsed #chat-search-panel{
+  display: none;
+}
+
+#sidebar.sidebar-collapsed .chat-delete-btn{
+  display: none !important;
+}
+
+#sidebar.sidebar-collapsed #chat-list{
+  padding-left: .25rem;
+  padding-right: .25rem;
+}
+
+#sidebar.sidebar-collapsed #chat-list > *{
+  justify-content: center;
+}
+
+#active-chat-title{
+  font-family: "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+@keyframes slideUpFade {
+  0% { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.temp-announce{
+  animation: slideUpFade 260ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+body.temp-mode #send-btn,
+body.temp-mode #send-btn svg{
+  color: #000 !important;
+}
+
+body.temp-mode #send-btn path{
+  stroke: #000 !important;
+  fill: none !important;
+}
+
+body.temp-mode #send-btn{
+  background: #fff !important;
+}
+
+.chat-scroll::-webkit-scrollbar{
+  width: 8px;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb{
+  background: #d1d5db;
+  border-radius: 999px;
+}
+
+.chat-scroll::-webkit-scrollbar-track{
+  background: transparent;
+}
+
+.typing-dot{
+  animation: blink 1.4s infinite both;
+}
+
+.typing-dot:nth-child(2){
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3){
+  animation-delay: 0.4s;
+}
+
+@keyframes blink{
+  0%{opacity:.2}
+  20%{opacity:1}
+  100%{opacity:.2}
+}
+
+.spinner{
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(156,163,175,.55);
+  border-top-color: rgba(156,163,175,0);
+  border-radius: 9999px;
+  animation: spin .8s linear infinite;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+
+.markdown {
+  line-height: 1.65;
+  word-break: break-word;
+}
+.markdown a { text-decoration: underline; }
+.markdown pre {
+  overflow-x: auto;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #0b1020;
+  color: #f8fafc;
+}
+.markdown code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.9em;
+}
+.markdown :not(pre) > code {
+  background: rgba(17,24,39,0.06);
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+</style>
+
+</head>
+
+<body class="h-full text-gray-900">
+
+<div class="flex h-screen w-full">
+  <div id="mobile-overlay" class="fixed inset-0 z-40 hidden bg-black/30 md:hidden"></div>
+
+  <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 hidden w-72 flex-col border-r bg-white md:static md:flex">
+    <div class="flex items-center gap-2 px-3 py-3">
+      <button id="sidebar-logo-btn" class="grid h-8 w-8 place-items-center rounded-md" type="button" aria-label="PTIT">
+        <img id="sidebar-logo-img" src="/static/image/Logo_PTIT_University.png" class="h-8 w-8 rounded-md" alt="PTIT">
+        <svg id="sidebar-logo-expand" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="ml-auto flex items-center">
+        <button id="sidebar-collapse-btn" class="sidebar-action hidden rounded-lg p-2 text-gray-600 hover:bg-gray-100 md:inline-flex" aria-label="Thu gọn sidebar" title="Thu gọn sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M15 18 9 12l6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="px-2 pb-1">
+      <button id="new-chat-btn" class="sidebar-action flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-100">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="sidebar-text">Cuộc trò chuyện mới</span>
+      </button>
+    </div>
+
+    <div class="px-2 pb-2">
+      <button id="chat-search-toggle" class="sidebar-action flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-100" type="button" aria-controls="chat-search-panel" aria-expanded="false">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span class="sidebar-text">Tìm kiếm</span>
+      </button>
+      <div id="chat-search-panel" class="hidden px-3 pt-2">
+        <input id="chat-search" class="w-full rounded-lg bg-transparent px-0 py-1 text-sm outline-none placeholder:text-gray-400" placeholder="Tìm kiếm">
+      </div>
+    </div>
+
+    <nav id="chat-list" class="chat-scroll flex-1 overflow-y-auto px-2 pb-3"></nav>
+
+  </aside>
+
+  <main class="flex flex-1 flex-col">
+    <header class="flex h-14 items-center justify-between border-b bg-white px-3 md:px-4">
+      <div class="flex items-center gap-2">
+        <button id="sidebar-toggle" class="rounded-lg p-2 hover:bg-gray-100 md:hidden" aria-label="Open sidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+
+        <div class="min-w-0">
+          <div id="active-chat-title" class="truncate text-base font-semibold text-gray-900">ChatPTIT</div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1">
+        <button id="clear-chat-btn" class="rounded-lg p-2 text-gray-700 hover:bg-gray-100" aria-label="Bật trò chuyện tạm thời" title="Bật trò chuyện tạm thời" style="--dasharray: 0;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M20 12c0 4.418-3.582 8-8 8-1.031 0-2.016-.195-2.92-.55L4 21l1.55-4.08A7.96 7.96 0 0 1 4 12c0-4.418 3.582-8 8-8s8 3.582 8 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" style="stroke-dasharray: var(--dasharray, 0);"/>
+            <path d="M8 11h8M8 14h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <section id="chat-scroll-area" class="chat-scroll flex-1 overflow-y-auto">
+      <div class="mx-auto flex min-h-full w-full max-w-4xl flex-col px-4 py-10">
+        <div id="empty-state" class="flex flex-1 translate-y-2 flex-col items-center justify-center gap-2 pb-10 text-center">
+          <div id="empty-head" class="flex min-h-[104px] w-full flex-col items-center justify-start gap-2">
+            <div id="empty-title" class="text-2xl font-light tracking-tight text-gray-500 md:text-3xl">Sẵn sàng khi bạn cần.</div>
+            <div id="empty-subtitle" class="hidden max-w-2xl text-sm leading-6 text-gray-400"></div>
+          </div>
+          <div id="empty-composer-slot" class="w-full max-w-3xl pt-0"></div>
+        </div>
+
+        <div id="chat-box" class="space-y-5"></div>
+      </div>
+    </section>
+
+    <footer id="footer" class="bg-[#f7f7f8]">
+      <div class="mx-auto w-full max-w-3xl px-4 py-4">
+        <div id="footer-composer-slot">
+          <div id="composer" class="flex items-center gap-3 rounded-full border border-gray-200 bg-white/95 px-4 py-2 shadow-lg shadow-gray-200/60 backdrop-blur-sm transition focus-within:ring-2 focus-within:ring-gray-300 hover:shadow-xl">
+            <textarea
+              id="message"
+              rows="1"
+              class="max-h-64 min-h-[26px] flex-1 resize-none bg-transparent py-1 text-base font-normal leading-6 outline-none placeholder:text-gray-400"
+              placeholder="Hỏi bất cứ điều gì..."
+            ></textarea>
+
+            <button
+              id="send-btn"
+              class="grid h-10 w-10 place-items-center rounded-full bg-gray-900 text-white hover:bg-black disabled:cursor-not-allowed disabled:bg-gray-400"
+              aria-label="Gửi"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M22 2 11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M22 2 15 22l-4-9-9-4 20-7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </main>
+</div>
+
+<script src="/static/script.js"></script>
+
+</body>
+</body>

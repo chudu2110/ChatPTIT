@@ -1,0 +1,12 @@
+langchain
+langchain-community
+langchain-core
+langchain-huggingface
+sentence-transformers
+faiss-cpu
+rank_bm25
+ollama
+gradio
+fastapi
+uvicorn
+python-dotenv
