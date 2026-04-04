@@ -6,6 +6,22 @@ const emptySubtitleEl = document.getElementById("empty-subtitle")
 const emptyComposerSlot = document.getElementById("empty-composer-slot")
 const activeChatTitleEl = document.getElementById("active-chat-title")
 
+const ICONS = {
+  copy: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M8 4v12a2 2 0 002 2h8a2 2 0 002-2V7.242a2 2 0 00-.602-1.43L17.43 4.602A2 2 0 0016 4H8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 4H8a2 2 0 00-2 2v12a2 2 0 002 2M16 4V4a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  good: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  bad: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zM17 2h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  share: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  retry: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  more: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/><circle cx="5" cy="12" r="1" fill="currentColor"/></svg>`,
+  branch: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 15V9a9 9 0 0 0-9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  speaker: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M11 5L6 9H2v6h4l5 4V5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  pause: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/></svg>`,
+  stop: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="7" y="7" width="10" height="10" rx="1.5" fill="currentColor"/></svg>`,
+}
+
+let currentSpeechMsgIndex = -1
+let isSpeechPaused = false
+
 const sidebar = document.getElementById("sidebar")
 const mobileOverlay = document.getElementById("mobile-overlay")
 const sidebarToggleBtn = document.getElementById("sidebar-toggle")
@@ -44,6 +60,10 @@ let tempMode = false
 let tempChatId = null
 let tempMessages = []
 let sidebarCollapsed = false
+let editingMessageIndex = -1
+
+let abortController = null
+let currentTypewriterTimeout = null
 
 function setClasses(el, add = [], remove = []) {
   if (!el) return
@@ -451,31 +471,216 @@ function setHeaderTitle() {
   activeChatTitleEl.textContent = APP_TITLE
 }
 
-function renderMessageItem(msg, { animate = false } = {}) {
+function renderMessageItem(msg, { animate = false, onComplete = null, index = -1 } = {}) {
   if (!chatBox) return null
   const wrapper = document.createElement("div")
+  if (index !== -1) wrapper.dataset.index = String(index)
 
   if (msg.role === "user") {
-    wrapper.className = "flex justify-end"
+    if (index !== -1 && index === editingMessageIndex) {
+      wrapper.className = "flex w-full flex-col items-end mb-4"
+      
+      const editBubble = document.createElement("div")
+      editBubble.className = "edit-bubble w-full max-w-[85%]"
+      
+      const textarea = document.createElement("textarea")
+      textarea.className = "edit-textarea"
+      textarea.value = msg.content
+      
+      const actions = document.createElement("div")
+      actions.className = "edit-actions"
+      
+      const cancelBtn = document.createElement("button")
+      cancelBtn.className = "btn-pill btn-pill-white"
+      cancelBtn.textContent = "Cancel"
+      cancelBtn.onclick = cancelEdit
+      
+      const sendBtn = document.createElement("button")
+      sendBtn.className = "btn-pill btn-pill-black"
+      sendBtn.textContent = "Send"
+      sendBtn.onclick = () => saveEdit(textarea.value)
+      
+      actions.appendChild(cancelBtn)
+      actions.appendChild(sendBtn)
+      editBubble.appendChild(textarea)
+      editBubble.appendChild(actions)
+      wrapper.appendChild(editBubble)
+      chatBox.appendChild(wrapper)
+      
+      setTimeout(() => {
+        textarea.focus()
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length)
+        textarea.style.height = "auto"
+        textarea.style.height = textarea.scrollHeight + "px"
+      }, 0)
+      
+      textarea.oninput = () => {
+        textarea.style.height = "auto"
+        textarea.style.height = textarea.scrollHeight + "px"
+      }
+
+      textarea.onkeydown = (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault()
+          saveEdit(textarea.value)
+        }
+        if (e.key === "Escape") cancelEdit()
+      }
+
+      if (onComplete) onComplete()
+      return { wrapper, bubble: textarea }
+    }
+
+    wrapper.className = "user-msg-wrapper flex flex-col items-end gap-1"
+    
     const bubble = document.createElement("div")
     bubble.className = "max-w-[85%] whitespace-pre-wrap rounded-2xl border border-gray-200 bg-gray-100 px-4 py-2 text-sm text-gray-900"
     bubble.textContent = msg.content || ""
+    
+    const actions = document.createElement("div")
+    actions.className = "user-msg-actions flex items-center gap-1 pr-1"
+    
+    const copyBtn = document.createElement("button")
+    copyBtn.className = "rounded-lg p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+    copyBtn.title = "Sao chép"
+    copyBtn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M8 4v12a2 2 0 002 2h8a2 2 0 002-2V7.242a2 2 0 00-.602-1.43L17.43 4.602A2 2 0 0016 4H8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M16 4H8a2 2 0 00-2 2v12a2 2 0 002 2M16 4V4a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `
+    copyBtn.onclick = () => copyToClipboard(msg.content, copyBtn)
+
+    const editBtn = document.createElement("button")
+    editBtn.className = "rounded-lg p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+    editBtn.title = "Sửa"
+    editBtn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `
+    editBtn.onclick = () => enterEditMode(index)
+
+    actions.appendChild(copyBtn)
+    actions.appendChild(editBtn)
+    
     wrapper.appendChild(bubble)
+    wrapper.appendChild(actions)
     chatBox.appendChild(wrapper)
+    
+    if (onComplete) onComplete()
     return { wrapper, bubble }
   }
 
-  wrapper.className = "flex justify-start"
+  wrapper.className = "assistant-msg-wrapper flex flex-col items-start gap-1"
 
   const bubble = document.createElement("div")
   bubble.className = "markdown max-w-[85%] whitespace-pre-wrap px-1 py-1 text-sm text-gray-900"
   const text = msg.content || ""
 
+  const actions = document.createElement("div")
+  actions.className = "assistant-msg-actions flex items-center gap-1 pl-1"
+  if (animate) actions.classList.add("is-typing")
+
+  const copyBtn = document.createElement("button")
+  copyBtn.className = "rounded-lg p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+  copyBtn.title = "Sao chép"
+  copyBtn.innerHTML = ICONS.copy
+  copyBtn.onclick = () => copyToClipboard(msg.content, copyBtn)
+
+  const goodBtn = document.createElement("button")
+  goodBtn.className = "rating-btn rounded-lg p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+  goodBtn.title = "Tốt"
+  goodBtn.innerHTML = ICONS.good
+  if (msg.rating === "good") goodBtn.classList.add("active")
+  goodBtn.onclick = () => rateMessage(index, "good", goodBtn)
+
+  const badBtn = document.createElement("button")
+  badBtn.className = "rating-btn rounded-lg p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+  badBtn.title = "Xấu"
+  badBtn.innerHTML = ICONS.bad
+  if (msg.rating === "bad") badBtn.classList.add("active")
+  badBtn.onclick = () => rateMessage(index, "bad", badBtn)
+
+  const shareBtn = document.createElement("button")
+  shareBtn.className = "rounded-lg p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+  shareBtn.title = "Chia sẻ"
+  shareBtn.innerHTML = ICONS.share
+  shareBtn.onclick = () => shareMessage(index)
+
+  const retryBtn = document.createElement("button")
+  retryBtn.className = "rounded-lg p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+  retryBtn.title = "Thử lại"
+  retryBtn.innerHTML = ICONS.retry
+  retryBtn.onclick = () => retryGeneration(index)
+
+  const moreContainer = document.createElement("div")
+  moreContainer.className = "relative"
+
+  const moreBtn = document.createElement("button")
+  moreBtn.className = "rounded-lg p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+  moreBtn.title = "Thêm"
+  moreBtn.innerHTML = ICONS.more
+  
+  const moreMenu = document.createElement("div")
+  moreMenu.className = "dropdown-menu"
+  
+  const branchItem = document.createElement("button")
+  branchItem.className = "dropdown-item"
+  branchItem.innerHTML = `${ICONS.branch}<span>Sang trang mới</span>`
+  branchItem.onclick = (e) => {
+    e.stopPropagation()
+    branchInNewChat(index)
+    moreMenu.classList.remove("show")
+  }
+
+  const readAloudItem = document.createElement("button")
+  readAloudItem.className = "dropdown-item"
+  const isReadingThis = currentSpeechMsgIndex === index
+  if (isReadingThis) {
+    readAloudItem.classList.add("is-reading")
+    const label = isSpeechPaused ? "Tiếp tục đọc" : "Tạm dừng đọc"
+    const icon = isSpeechPaused ? ICONS.speaker : ICONS.stop
+    readAloudItem.innerHTML = `${icon}<span>${label}</span>`
+  } else {
+    readAloudItem.innerHTML = `${ICONS.speaker}<span>Đọc tin nhắn</span>`
+  }
+  
+  readAloudItem.onclick = (e) => {
+    e.stopPropagation()
+    const wrapperEl = readAloudItem.closest(".assistant-msg-wrapper")
+    const bubbleEl = wrapperEl?.querySelector(".markdown")
+    const displayed = (bubbleEl?.innerText || "").trim()
+    readAloud(displayed || msg.content, index)
+    moreMenu.classList.remove("show")
+  }
+
+  moreMenu.appendChild(branchItem)
+  moreMenu.appendChild(readAloudItem)
+  moreContainer.appendChild(moreBtn)
+  moreContainer.appendChild(moreMenu)
+
+  moreBtn.onclick = (e) => {
+    e.stopPropagation()
+    const isShown = moreMenu.classList.contains("show")
+    document.querySelectorAll(".dropdown-menu.show").forEach(m => m.classList.remove("show"))
+    if (!isShown) moreMenu.classList.add("show")
+  }
+
+  actions.appendChild(copyBtn)
+  actions.appendChild(goodBtn)
+  actions.appendChild(badBtn)
+  actions.appendChild(shareBtn)
+  actions.appendChild(retryBtn)
+  actions.appendChild(moreContainer)
+
   wrapper.appendChild(bubble)
+  wrapper.appendChild(actions)
   chatBox.appendChild(wrapper)
 
   if (!animate) {
     bubble.innerHTML = marked.parse(text)
+    if (onComplete) onComplete()
     return { wrapper, bubble }
   }
 
@@ -484,16 +689,26 @@ function renderMessageItem(msg, { animate = false } = {}) {
   const chunk = 3
   const tick = 10
   function type() {
+    if (currentTypewriterTimeout === "STOPPED") {
+      actions.classList.remove("is-typing")
+      currentTypewriterTimeout = null
+      if (onComplete) onComplete()
+      return
+    }
+
     if (i < text.length) {
       const partial = text.slice(0, i)
       bubble.innerHTML = marked.parse(partial)
       i += chunk
       scrollBottom()
-      setTimeout(type, tick)
+      currentTypewriterTimeout = setTimeout(type, tick)
       return
     }
     bubble.innerHTML = marked.parse(text)
+    currentTypewriterTimeout = null
+    actions.classList.remove("is-typing")
     scrollBottom()
+    if (onComplete) onComplete()
   }
   type()
 
@@ -501,15 +716,20 @@ function renderMessageItem(msg, { animate = false } = {}) {
 }
 
 function renderTypingAssistant() {
-  const msg = { role: "assistant", content: "" }
-  const item = renderMessageItem(msg, { animate: false })
-  if (!item?.bubble) return null
-  item.bubble.innerHTML = `
+  if (!chatBox) return null
+  const wrapper = document.createElement("div")
+  wrapper.className = "assistant-msg-wrapper flex flex-col items-start gap-1"
+  
+  const loadingContainer = document.createElement("div")
+  loadingContainer.className = "px-4 py-2"
+  loadingContainer.innerHTML = `
     <div class="flex items-center gap-2 text-gray-400">
       <span class="spinner" aria-hidden="true"></span>
     </div>
   `
-  return item
+  wrapper.appendChild(loadingContainer)
+  chatBox.appendChild(wrapper)
+  return { wrapper }
 }
 
 function renderActiveChat() {
@@ -517,7 +737,9 @@ function renderActiveChat() {
   chatBox.innerHTML = ""
   const messages = getActiveMessages()
   setEmptyStateVisible(messages.length === 0)
-  for (const msg of messages) renderMessageItem(msg, { animate: false })
+  messages.forEach((msg, idx) => {
+    renderMessageItem(msg, { animate: false, index: idx })
+  })
   setHeaderTitle()
   requestAnimationFrame(scrollBottom)
 }
@@ -621,7 +843,17 @@ function updateChatTitleFromFirstMessage(text) {
 
 function setSending(sending) {
   isSending = sending
-  if (sendBtn) sendBtn.disabled = sending
+  if (sendBtn) {
+    if (sending) {
+      sendBtn.classList.add("is-loading")
+      sendBtn.setAttribute("aria-label", "Dừng")
+    } else {
+      sendBtn.classList.remove("is-loading")
+      sendBtn.setAttribute("aria-label", "Gửi")
+    }
+    // Không disable nút khi đang gửi để có thể nhấn dừng
+    sendBtn.disabled = false
+  }
   if (messageInput) messageInput.disabled = sending
 }
 
@@ -631,9 +863,227 @@ function autoResizeTextarea() {
   messageInput.style.height = Math.min(messageInput.scrollHeight, 192) + "px"
 }
 
-async function sendMessage() {
-  if (isSending) return
-  const message = (messageInput?.value || "").trim()
+function stopGeneration() {
+  if (abortController) {
+    abortController.abort()
+    abortController = null
+  }
+  // We don't clearTimeout here, because we want the next 'type' tick 
+  // to see the "STOPPED" state and call onComplete to resolve the Promise.
+  currentTypewriterTimeout = "STOPPED"
+  const typingActions = document.querySelector(".assistant-msg-actions.is-typing")
+  const typingWrapper = typingActions?.closest(".assistant-msg-wrapper")
+  const typingIndexRaw = typingWrapper?.dataset?.index
+  const typingIndex = typingIndexRaw ? Number(typingIndexRaw) : -1
+  if (typingWrapper && Number.isInteger(typingIndex) && typingIndex >= 0) {
+    const bubbleEl = typingWrapper.querySelector(".markdown")
+    const displayed = (bubbleEl?.innerText || "").trim()
+    if (displayed) {
+      const messages = getActiveMessages()
+      const msg = messages[typingIndex]
+      if (msg && msg.role === "assistant") {
+        msg.content = displayed
+        setActiveMessages(messages)
+      }
+    }
+  }
+  document.querySelectorAll(".assistant-msg-actions.is-typing").forEach(el => el.classList.remove("is-typing"))
+  document.querySelectorAll(".assistant-msg-wrapper .spinner").forEach(sp => sp.closest(".assistant-msg-wrapper")?.remove())
+  setSending(false)
+}
+
+function copyToClipboard(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (!btn) return
+    const originalSvg = btn.innerHTML
+    btn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M5 13l4 4L19 7" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `
+    setTimeout(() => {
+      btn.innerHTML = originalSvg
+    }, 2000)
+  })
+}
+
+function enterEditMode(index) {
+  editingMessageIndex = index
+  renderActiveChat()
+}
+
+function rateMessage(index, rating, btn) {
+  const messages = getActiveMessages()
+  if (index < 0 || index >= messages.length) return
+  
+  const msg = messages[index]
+  const isSelected = msg.rating === rating
+  
+  // Reset all ratings in this message's actions
+  const wrapper = btn.closest(".assistant-msg-actions")
+  if (wrapper) {
+    wrapper.querySelectorAll(".rating-btn").forEach(b => b.classList.remove("active"))
+  }
+  
+  if (isSelected) {
+    msg.rating = null
+  } else {
+    msg.rating = rating
+    btn.classList.add("active")
+  }
+  
+  setActiveMessages(messages)
+}
+
+function shareMessage(index) {
+  const messages = getActiveMessages()
+  if (index < 0 || index >= messages.length) return
+  const text = messages[index].content
+  
+  if (navigator.share) {
+    navigator.share({
+      title: "PTIT Chat Answer",
+      text: text,
+      url: window.location.href
+    }).catch(console.error)
+  } else {
+    // Fallback to copy link
+    copyToClipboard(window.location.href, null)
+    alert("Đã sao chép liên kết vào bộ nhớ tạm.")
+  }
+}
+
+async function retryGeneration(index) {
+  const messages = getActiveMessages()
+  if (index < 0 || index >= messages.length) return
+  
+  const assistantMsg = messages[index]
+  const rating = assistantMsg.rating || null
+  
+  // Find the user message before this assistant message
+  let userMsgIndex = -1
+  for (let i = index - 1; i >= 0; i--) {
+    if (messages[i].role === "user") {
+      userMsgIndex = i
+      break
+    }
+  }
+  
+  if (userMsgIndex === -1) return
+  
+  const userText = messages[userMsgIndex].content
+  
+  // Remove everything from the assistant message onwards
+  messages.splice(index)
+  setActiveMessages(messages)
+  
+  renderActiveChat()
+  await sendMessage(userText, true, rating)
+}
+
+function branchInNewChat(index) {
+  const messages = getActiveMessages()
+  if (index < 0 || index >= messages.length) return
+  
+  const msg = messages[index]
+  const newChatId = genId()
+  const newChat = {
+    id: newChatId,
+    title: truncateTitle(msg.content.slice(0, 30)),
+    createdAt: nowIso(),
+    updatedAt: nowIso()
+  }
+  
+  chats = [newChat, ...chats]
+  saveChats()
+  
+  // Add the message to the new chat
+  saveMessages(newChatId, [{
+    role: "assistant",
+    content: msg.content,
+    createdAt: nowIso()
+  }])
+  
+  setActiveChat(newChatId)
+  closeMobileSidebar()
+}
+
+function readAloud(text, index) {
+  if (!window.speechSynthesis) return
+  
+  // Nếu đang đọc chính tin nhắn này, nhấn lại để tạm dừng/tiếp tục
+  if (window.speechSynthesis.speaking && currentSpeechMsgIndex === index) {
+    if (isSpeechPaused) {
+      window.speechSynthesis.resume()
+      isSpeechPaused = false
+    } else {
+      window.speechSynthesis.pause()
+      isSpeechPaused = true
+    }
+    renderActiveChat()
+    return
+  }
+
+  // Nếu đọc tin nhắn khác hoặc chưa đọc, hủy cái cũ và bắt đầu mới
+  window.speechSynthesis.cancel()
+  isSpeechPaused = false
+  
+  const utterance = new SpeechSynthesisUtterance(text)
+  utterance.lang = "vi-VN"
+  
+  utterance.onstart = () => {
+    currentSpeechMsgIndex = index
+    renderActiveChat()
+  }
+  
+  utterance.onend = () => {
+    currentSpeechMsgIndex = -1
+    isSpeechPaused = false
+    renderActiveChat()
+  }
+  
+  utterance.onerror = () => {
+    currentSpeechMsgIndex = -1
+    isSpeechPaused = false
+    renderActiveChat()
+  }
+  
+  window.speechSynthesis.speak(utterance)
+}
+
+function cancelEdit() {
+  editingMessageIndex = -1
+  renderActiveChat()
+}
+
+async function saveEdit(newText) {
+  newText = (newText || "").trim()
+  if (!newText || editingMessageIndex === -1) {
+    cancelEdit()
+    return
+  }
+
+  const messages = getActiveMessages()
+  
+  // Xóa tất cả tin nhắn từ vị trí đang sửa trở đi
+  messages.splice(editingMessageIndex)
+  setActiveMessages(messages)
+  
+  editingMessageIndex = -1
+  
+  // Re-render chat to remove deleted messages from UI
+  renderActiveChat()
+  
+  // Gửi tin nhắn mới với animation
+  await sendMessage(newText, true)
+}
+
+async function sendMessage(overrideMessage = null, isEdit = false, rating = null) {
+  if (isSending) {
+    stopGeneration()
+    return
+  }
+  const message = overrideMessage !== null ? overrideMessage : (messageInput?.value || "").trim()
   if (!message) return
 
   setSending(true)
@@ -643,11 +1093,19 @@ async function sendMessage() {
   messages.push({ role: "user", content: message, createdAt: nowIso() })
   setActiveMessages(messages)
 
-  renderMessageItem({ role: "user", content: message }, { animate: false })
+  const { wrapper } = renderMessageItem({ role: "user", content: message }, { 
+    animate: false, 
+    index: messages.length - 1 
+  })
+  
+  if (isEdit && wrapper) {
+    wrapper.classList.add("animate-fly-in")
+  }
+  
   setEmptyStateVisible(false)
   scrollBottom()
 
-  if (messageInput) {
+  if (!overrideMessage && messageInput) {
     messageInput.value = ""
     autoResizeTextarea()
   }
@@ -659,11 +1117,13 @@ async function sendMessage() {
   await sleep(150)
 
   try {
+    abortController = new AbortController()
     const session_id = getSessionIdForServer()
     const res = await fetch("/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, session_id }),
+      body: JSON.stringify({ message, session_id, rating }),
+      signal: abortController.signal
     })
 
     const data = await res.json()
@@ -679,9 +1139,25 @@ async function sendMessage() {
     if (remaining > 0) await sleep(remaining)
 
     if (typingItem?.wrapper) typingItem.wrapper.remove()
-    renderMessageItem(finalMsg, { animate: true })
+    
+    // Check if stopped before starting animation
+    if (!isSending) return
+
+    currentTypewriterTimeout = null // Reset before starting new typewriter
+    
+    await new Promise(resolve => {
+      renderMessageItem(finalMsg, { 
+        animate: true, 
+        onComplete: resolve,
+        index: updated.length - 1 // Truyền index vào đây
+      })
+    })
     scrollBottom()
   } catch (e) {
+    if (e.name === "AbortError") {
+      if (typingItem?.wrapper) typingItem.wrapper.remove()
+      return
+    }
     const errText = "Có lỗi khi kết nối server. Vui lòng thử lại."
     const finalMsg = { role: "assistant", content: errText, createdAt: nowIso() }
     const updated = getActiveMessages()
@@ -696,7 +1172,8 @@ async function sendMessage() {
     renderMessageItem(finalMsg, { animate: false })
     scrollBottom()
   } finally {
-    setSending(false)
+    if (isSending) setSending(false)
+    abortController = null
     focusInput()
   }
 }
@@ -719,6 +1196,13 @@ function bindEvents() {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeMobileSidebar()
     if (e.key === "Escape") closeSearchPanelIfEmpty()
+    if (e.key === "Escape") document.querySelectorAll(".dropdown-menu.show").forEach(m => m.classList.remove("show"))
+  })
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".relative")) {
+      document.querySelectorAll(".dropdown-menu.show").forEach(m => m.classList.remove("show"))
+    }
   })
 
   if (newChatBtn) newChatBtn.addEventListener("click", createNewChat)

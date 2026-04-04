@@ -4,6 +4,8 @@ import re
 from .config import DATA_PATH
 
 _SCHOOL_INFO_DOC: str | None = None
+_MAJORS_DOC: str | None = None
+_TUITION_DOC: str | None = None
 
 
 def _load_school_info_doc() -> str:
@@ -30,6 +32,54 @@ def _load_school_info_doc() -> str:
     with open(preferred, "r", encoding="utf-8") as f:
         _SCHOOL_INFO_DOC = f.read()
     return _SCHOOL_INFO_DOC
+
+
+def _load_majors_doc() -> str:
+    global _MAJORS_DOC
+    if _MAJORS_DOC is not None:
+        return _MAJORS_DOC
+    md_files: list[str] = []
+    for root, _, files in os.walk(DATA_PATH):
+        for fn in files:
+            if fn.lower().endswith(".md"):
+                md_files.append(os.path.join(root, fn))
+    md_files = sorted(md_files)
+    preferred = None
+    for p in md_files:
+        name = os.path.basename(p).lower()
+        if "danh_muc_nganh" in name or "nganh_dao_tao" in name:
+            preferred = p
+            break
+    if not preferred:
+        _MAJORS_DOC = ""
+        return _MAJORS_DOC
+    with open(preferred, "r", encoding="utf-8") as f:
+        _MAJORS_DOC = f.read()
+    return _MAJORS_DOC
+
+
+def _load_tuition_doc() -> str:
+    global _TUITION_DOC
+    if _TUITION_DOC is not None:
+        return _TUITION_DOC
+    md_files: list[str] = []
+    for root, _, files in os.walk(DATA_PATH):
+        for fn in files:
+            if fn.lower().endswith(".md"):
+                md_files.append(os.path.join(root, fn))
+    md_files = sorted(md_files)
+    preferred = None
+    for p in md_files:
+        name = os.path.basename(p).lower()
+        if "hoc_phi" in name or "hoc_bong" in name:
+            preferred = p
+            break
+    if not preferred:
+        _TUITION_DOC = ""
+        return _TUITION_DOC
+    with open(preferred, "r", encoding="utf-8") as f:
+        _TUITION_DOC = f.read()
+    return _TUITION_DOC
 
 
 def _extract_section(md: str, header_prefix: str) -> str | None:
@@ -140,8 +190,7 @@ def _format_school_location(md: str) -> str | None:
     addr = _extract_between(sec, "**Địa chỉ:**", "**Trang web:**")
     web = _extract_between(sec, "**Trang web:**", "**Hotline tư vấn:**")
     hotline = _extract_between(sec, "**Hotline tư vấn:**", "**Cơ sở vật chất:**")
-    facilities = _extract_bullets_after(sec, "**Cơ sở vật chất:**", max_items=6)
-
+    
     lines: list[str] = []
     lines.append("Thông tin liên hệ PTIT:")
     if addr:
@@ -150,16 +199,59 @@ def _format_school_location(md: str) -> str | None:
         lines.append(f"- Website: {web.strip()}")
     if hotline:
         lines.append(f"- Hotline tư vấn: {hotline.strip()}")
-    if facilities:
-        lines.append("\nCơ sở vật chất:")
-        lines.extend(facilities)
+    return "\n".join(lines).strip()
+
+
+def _format_school_facilities(md: str) -> str | None:
+    sec = _extract_section(md, "Q5:")
+    if not sec:
+        return None
+    facilities = _extract_bullets_after(sec, "**Cơ sở vật chất:**", max_items=10)
+    if not facilities:
+        return None
+    
+    lines: list[str] = []
+    lines.append("Cơ sở vật chất của PTIT:")
+    lines.extend(facilities)
+    lines.append("\nBạn có muốn tìm hiểu thêm về các ngành đào tạo, học phí/học bổng hay phương thức tuyển sinh của trường không?")
+    return "\n".join(lines).strip()
+
+
+def _format_school_tuition(md: str) -> str | None:
+    if not md:
+        return None
+    
+    lines: list[str] = []
+    lines.append("Thông tin học phí và học bổng tại PTIT năm 2025:")
+    
+    # Extract tuition
+    tuition_sec = _extract_between(md, "## 1. Học phí hàng năm (đơn vị: triệu đồng/năm)", "## 2. Cơ hội học bổng")
+    if tuition_sec:
+        lines.append("\n**Học phí hàng năm:**")
+        lines.append(tuition_sec.strip())
+        
+    # Extract scholarships
+    scholarship_sec = _extract_between(md, "## 2. Cơ hội học bổng", None)
+    if scholarship_sec:
+        lines.append("\n**Cơ hội học bổng:**")
+        # Just take the first few bullets or summarized text
+        bullets = scholarship_sec.split("\n- ")
+        if len(bullets) > 1:
+            lines.append("- " + "\n- ".join([b.strip() for b in bullets[1:4]]))
+            if len(bullets) > 4:
+                lines.append("- Và nhiều cơ hội học bổng khác từ doanh nghiệp...")
+        else:
+            lines.append(scholarship_sec.strip())
+            
+    lines.append("\nBạn muốn mình tư vấn thêm về ngành đào tạo, cơ sở vật chất hay phương thức tuyển sinh của PTIT không?")
     return "\n".join(lines).strip()
 
 
 def _format_school_majors(md: str) -> str | None:
     sec = _extract_section(md, "Q3:")
     if not sec:
-        return None
+        majors_md = _load_majors_doc()
+        return _format_major_catalog(majors_md)
     body = _extract_between(sec, "**Câu trả lời:**", None) or sec
     out_lines: list[str] = []
     for ln in body.splitlines():
@@ -171,8 +263,62 @@ def _format_school_majors(md: str) -> str | None:
         out_lines.append(s)
     out = "\n".join(out_lines).strip()
     if out:
-        out += "\n\nBạn muốn mình gợi ý ngành theo sở thích/điểm của bạn không?"
+        out += "\n\nBạn muốn mình tư vấn thêm về cơ sở vật chất, học phí/học bổng hay phương thức tuyển sinh của PTIT không?"
     return out or None
+
+
+def _format_major_catalog(md: str) -> str | None:
+    if not md:
+        return None
+    groups: dict[str, list[str]] = {}
+    current_group: str | None = None
+
+    def _clean_title(s: str) -> str:
+        s = re.sub(r"\([^)]*\)", "", s).strip()
+        s = re.sub(r"\s{2,}", " ", s).strip()
+        return s
+
+    for raw in md.splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        if line.startswith("## "):
+            title = _clean_title(line[3:].strip())
+            if not title:
+                current_group = None
+                continue
+            if title.lower().startswith("bảng tóm tắt"):
+                break
+            current_group = title
+            groups.setdefault(current_group, [])
+            continue
+        if current_group and line.startswith("### "):
+            major = _clean_title(line[4:].strip())
+            if major:
+                groups[current_group].append(major)
+
+    if not groups:
+        return None
+
+    ordered = list(groups.items())
+    lines: list[str] = ["Danh mục ngành đào tạo PTIT (tóm tắt):"]
+    for group, majors in ordered:
+        uniq: list[str] = []
+        seen = set()
+        for m in majors:
+            key = m.lower()
+            if key in seen:
+                continue
+            seen.add(key)
+            uniq.append(m)
+        shown = uniq[:8]
+        tail = "" if len(uniq) <= len(shown) else f", ... (tổng {len(uniq)} ngành/chương trình)"
+        lines.append(f"\n- **{group}**: " + ", ".join(shown) + tail)
+
+    lines.append(
+        "\nBạn muốn xem chi tiết ngành nào (hoặc khối nào) để mình nói rõ về mã xét tuyển, tổ hợp môn và mô tả ngành?"
+    )
+    return "\n".join(lines).strip()
 
 
 def _format_school_strength_majors(md: str) -> str | None:
@@ -228,35 +374,30 @@ def _format_school_strength_majors(md: str) -> str | None:
 
 def _is_school_info_query(text: str) -> bool:
     lower = (text or "").lower()
-    if "ptit" not in lower and "học viện" not in lower and "trường" not in lower:
+    # If the text is very short and matches a school info topic, we allow it even without "ptit/trường"
+    # because the context is handled by app.py rewriting or by the nature of the suggestions.
+    school_topics = [
+        "cơ sở vật chất", "co so vat chat", "cơ sở", "co so",
+        "phòng lab", "phòng thí nghiệm", "thư viện", "ký túc xá", "ktx",
+        "học phí", "hoc phi", "học bổng", "hoc bong",
+        "địa chỉ", "dia chi", "ở đâu", "o dau",
+        "cơ hội nghề nghiệp", "việc làm", "co hoi nghe nghiep", "viec lam",
+    ]
+    
+    is_topic = any(k == lower.strip() or f" {k} " in f" {lower} " for k in school_topics)
+    
+    if not is_topic and "ptit" not in lower and "học viện" not in lower and "trường" not in lower:
         return False
+
     if any(
         k in lower
         for k in ["điểm chuẩn", "ttnv", "mã ngành", "tổ hợp", "pt1", "pt2", "pt3", "pt4", "pt5"]
     ):
         return False
-    if any(
-        k in lower
-        for k in [
-            "học phí",
-            "học phi",
-            "hoc phi",
-            "học bổng",
-            "hoc bong",
-            "phương thức",
-            "xét tuyển",
-            "tuyển sinh",
-            "hồ sơ",
-            "đăng ký",
-            "chỉ tiêu",
-            "lệ phí",
-            "việc làm",
-            "nghề nghiệp",
-            "cơ hội",
-            "mức lương",
-        ]
-    ):
-        return False
+    
+    # We now allow học phí and học bổng here if they are about PTIT
+    # (previously they were excluded to fall through to RAG, but we want a better formatter)
+    
     if lower.strip() in {
         "ptit",
         "học viện ptit",
@@ -265,21 +406,86 @@ def _is_school_info_query(text: str) -> bool:
         "hoc vien cong nghe buu chinh vien thong",
     }:
         return True
-    base = ["giới thiệu", "thông tin", "là gì", "trường gì", "về trường", "tổng quan", "đặc điểm", "ở đâu", "địa chỉ"]
+    
+    majors_intent = [
+        "ngành đào tạo",
+        "các ngành đào tạo",
+        "danh mục ngành",
+        "danh muc nganh",
+        "ngành học",
+        "các ngành học",
+        "khối ngành",
+        "các khối ngành",
+        "đào tạo gì",
+        "ngành nào",
+        "chương trình chất lượng cao",
+        "chất lượng cao",
+        "clc",
+    ]
+    if any(k in lower for k in majors_intent):
+        return True
+    
+    base = ["giới thiệu", "thông tin", "là gì", "trường gì", "về trường", "tổng quan", "đặc điểm", "ở đâu", "địa chỉ", "cơ sở", "học phí", "học bổng", "cơ hội", "việc làm", "nghề nghiệp"]
     if any(k in lower for k in base):
         return True
+        
     if ("thế mạnh" in lower or "nổi bật" in lower) and "ngành" in lower:
         return True
     return False
 
 
+def _format_school_career(md: str) -> str | None:
+    sec = _extract_section(md, "Q2:")
+    if not sec:
+        return None
+    
+    career_info = _extract_between(sec, "### Cơ hội Việc Làm", "### Chương trình hỗ trợ sự nghiệp:")
+    if not career_info:
+        return None
+        
+    lines: list[str] = []
+    lines.append("Cơ hội nghề nghiệp của sinh viên PTIT:")
+    lines.append(career_info.strip())
+    lines.append("\nBạn muốn tìm hiểu chi tiết về cơ hội nghề nghiệp của một ngành cụ thể nào không? (Ví dụ: CNTT, Marketing, ATTT...)")
+    return "\n".join(lines).strip()
+
+
 def answer_school_info_query(question: str) -> str | None:
     if not _is_school_info_query(question):
         return None
+    
+    lower = (question or "").lower()
+    
+    # Check for career in general
+    if any(k in lower for k in ["cơ hội", "việc làm", "nghề nghiệp"]):
+        # But we need to make sure we load the right file
+        md_career = None
+        md_files: list[str] = []
+        for root, _, files in os.walk(DATA_PATH):
+            for fn in files:
+                if fn.lower().endswith(".md") and ("co_hoi_viec_lam" in fn.lower() or "career" in fn.lower()):
+                    with open(os.path.join(root, fn), "r", encoding="utf-8") as f:
+                        md_career = f.read()
+                    break
+        if md_career:
+            return _format_school_career(md_career)
+
+    # Check for tuition first since it's in a different file
+    if any(k in lower for k in ["học phí", "học phi", "hoc phi", "học bổng", "hoc bong"]):
+        tuition_md = _load_tuition_doc()
+        if tuition_md:
+            return _format_school_tuition(tuition_md)
+
     md = _load_school_info_doc()
     if not md:
         return None
-    lower = (question or "").lower()
+
+    if any(k in lower for k in ["cơ sở vật chất", "phòng lab", "thư viện", "ký túc xá", "ktx"]):
+        return _format_school_facilities(md)
+
+    if any(k in lower for k in ["ở đâu", "địa chỉ", "cơ sở", "hotline", "website"]):
+        return _format_school_location(md)
+
     majors_intent_phrases = [
         "ngành đào tạo",
         "các ngành đào tạo",
@@ -294,16 +500,18 @@ def answer_school_info_query(question: str) -> str | None:
         "chất lượng cao",
         "clc",
     ]
-    if any(k in lower for k in ["ở đâu", "địa chỉ", "cơ sở", "hotline", "website"]):
-        return _format_school_location(md)
     if ("thế mạnh" in lower or "nổi bật" in lower) and "ngành" in lower:
         result = _format_school_strength_majors(md)
         if result:
             return result
+            
     if any(k in lower for k in majors_intent_phrases) or ("ngành" in lower and "đào tạo" in lower):
         return _format_school_majors(md)
+        
     if any(k in lower for k in ["đặc điểm", "nổi bật", "thế mạnh"]):
         return _format_school_intro(md)
+        
     if any(k in lower for k in ["khối ngành", "ngành nào", "ngành gì", "đào tạo gì"]):
         return _format_school_majors(md)
+        
     return _format_school_intro(md)

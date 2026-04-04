@@ -45,13 +45,19 @@ def is_admission_method_query(text: str) -> bool:
 
 
 def _is_admission_methods_overview_query(text: str) -> bool:
-    lower = (text or "").lower()
+    lower = (text or "").lower().strip()
     if _find_admission_method(lower) is not None:
         return False
+        
+    # Handle short exact matches from suggestions
+    if lower in ["phương thức tuyển sinh", "phuong thuc tuyen sinh", "phương thức xét tuyển", "phuong thuc xet tuyen", "phương thức", "phuong thuc"]:
+        return True
+        
     if "phương thức" not in lower and "cách tuyển" not in lower and "hình thức" not in lower:
         return False
     if "tuyển sinh" not in lower and "xét tuyển" not in lower:
         return False
+    
     stripped = " ".join(lower.split())
     if stripped.startswith("phương thức xét tuyển") or stripped.startswith("phương thức tuyển sinh"):
         return True
@@ -75,7 +81,7 @@ def answer_admission_methods_overview_query(question: str) -> str | None:
         f"- **{pt3['name']}**: xét bằng điểm các bài thi ĐGNL/ĐGTD (HSA/TSA/SPT/APT).",
         f"- **{pt4['name']}**: chứng chỉ tiếng Anh quốc tế + kết quả học tập THPT.",
         f"- **{pt5['name']}**: xét theo điểm thi tốt nghiệp THPT 2026 theo tổ hợp môn.",
-        "\nBạn muốn mình giải thích chi tiết điều kiện của phương thức nào (PT1–PT5)?",
+        "\nNgoài các phương thức tuyển sinh, bạn muốn mình tư vấn thêm về ngành đào tạo, cơ sở vật chất hay học phí/học bổng của PTIT không?",
     ]
     return "\n".join(lines)
 
