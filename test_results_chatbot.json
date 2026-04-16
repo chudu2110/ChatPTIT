@@ -1,0 +1,319 @@
+{
+  "summary": {
+    "passed": 31,
+    "total": 31,
+    "accuracy": 100.0
+  },
+  "results": [
+    {
+      "group": "identity",
+      "query": "Bạn là ai cơ mà",
+      "intent": "identity",
+      "mode": "query",
+      "source": "System",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "Mình là chatbot tư vấn tuyển sinh PTIT. Mình có thể hỗ trợ tra cứu điểm chuẩn, TTNV, phương thức tuyển sinh, học phí, học bổng, giới thiệu ngành và gợi ý ngành phù hợp theo điểm hoặc sở thích của bạn."
+    },
+    {
+      "group": "school_intro",
+      "query": "Giới thiệu về PTIT",
+      "intent": "general_qa",
+      "mode": "query",
+      "source": "gioi_thieu_ptit.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Giới thiệu về PTIT**\n\nPTIT (Học viện Công nghệ Bưu chính Viễn thông) là trường đại học công lập, nổi bật ở các lĩnh vực công nghệ, kinh tế và truyền thông.\n\n**Thông tin chính:**\n- Loại trường: Đại học công lập\n- Chuyên ngành: Công nghệ, Kinh tế, Truyền thông\n- Lịch sử: Gần 75 năm xây dựng và phát triển\n- Vị trí: Hà Nội, Việt Nam\n\n**Điểm nổi bật:**\n- Tiên phong mở các ngành đào tạo liên ngành lần đầu tiên tại Việt Nam (Công nghệ Đa phương tiện, Công nghệ Tài chính, Game Design, IoT, etc.)\n- 1"
+    },
+    {
+      "group": "major_intro",
+      "query": "Giới thiệu về ngành CNTT",
+      "intent": "major_info",
+      "mode": "query",
+      "source": "danh_muc_nganh_dao_tao.md, diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Giới thiệu ngành Công nghệ Thông tin (CNTT)**\n\nNếu bạn đang quan tâm tới **Công nghệ Thông tin (CNTT)**, đây là những thông tin quan trọng nhất:\n\n| Mục | Thông tin |\n|---|---|\n| Mã ngành/Mã xét tuyển | 7480201 (Đại trà) |\n| Nhóm chương trình | Đại trà |\n| Điểm chuẩn THPT 2025 | 26.55 |\n| Tổ hợp xét tuyển | Toán, Lí, Hóa (A00) / Toán, Lí, Anh (A01) / Toán, Lí, Tin (X06) / Toán, Tin, Anh (X26) |\n| Mô tả ngắn | Ngành đào tạo lập trình viên, phát triển phần mềm, ứng dụng web/mobile. Là ngành phổ"
+    },
+    {
+      "group": "major_intro_alias",
+      "query": "Giới thiệu ngành VT",
+      "intent": "major_info",
+      "mode": "query",
+      "source": "danh_muc_nganh_dao_tao.md, diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Giới thiệu ngành Kỹ thuật Điện tử Viễn thông**\n\nNếu bạn đang quan tâm tới **Kỹ thuật Điện tử Viễn thông**, đây là những thông tin quan trọng nhất:\n\n| Mục | Thông tin |\n|---|---|\n| Mã ngành/Mã xét tuyển | 7520207 (Đại trà) |\n| Nhóm chương trình | Đại trà |\n| Điểm chuẩn THPT 2025 | 25.1 |\n| Tổ hợp xét tuyển | Toán, Lí, Hóa (A00) / Toán, Lí, Anh (A01) / Toán, Lí, Tin (X06) / Toán, Tin, Anh (X26) |\n| Mô tả ngắn | Đào tạo về thiết kế mạch điện, viễn thông, truyền tín hiệu. |\n| Kỹ năng chính | Thi"
+    },
+    {
+      "group": "cutoff",
+      "query": "Điểm chuẩn ngành CNTT là bao nhiêu",
+      "intent": "cutoff_query",
+      "mode": "query",
+      "source": "diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Điểm chuẩn ngành Công nghệ Thông tin (CNTT)**\n\n| Phương thức | Điểm chuẩn/Mốc tham chiếu | Ghi chú |\n|---|---:|---|\n| THPT (PT5) | 26.55 | TTNV <= 5 |\n| Kết hợp (PT4) | 28.44 | Thang 30 |\n| Tài năng (PT1) | 86.64 | Thang 100 |\n| SAT | 1374.29 | Thang 1600 |\n| ACT | 30.83 | Thang 36 |\n| HSA | 101.2 | Thang 150 |\n| TSA | 72.3 | Thang 100 |\n| SPT | 23.82 | Thang 30 |\n| APT | 913.03 | Thang 1200 |\n\nMã ngành: **7480201**. Loại chương trình: **Đại trà**."
+    },
+    {
+      "group": "cutoff_alias",
+      "query": "Điểm chuẩn ngành VT",
+      "intent": "cutoff_query",
+      "mode": "query",
+      "source": "diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Điểm chuẩn ngành Kỹ thuật Điện tử Viễn thông**\n\n| Phương thức | Điểm chuẩn/Mốc tham chiếu | Ghi chú |\n|---|---:|---|\n| THPT (PT5) | 25.1 | TTNV <= 2 |\n| Kết hợp (PT4) | 27.64 | Thang 30 |\n| Tài năng (PT1) | 76.79 | Thang 100 |\n| SAT | 1341.43 | Thang 1600 |\n| ACT | 29.83 | Thang 36 |\n| HSA | 96.49 | Thang 150 |\n| TSA | 68.96 | Thang 100 |\n| SPT | 22.56 | Thang 30 |\n| APT | 880.91 | Thang 1200 |\n\nMã ngành: **7520207**. Loại chương trình: **Đại trà**."
+    },
+    {
+      "group": "cutoff_hsa",
+      "query": "HSA ngành CNTT bao nhiêu",
+      "intent": "admission_method",
+      "mode": "query",
+      "source": "diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Công nghệ Thông tin (CNTT)** — Điểm chuẩn HSA 2025: **101.2/150**\n  (Điều kiện tối thiểu: HSA ≥ 75)"
+    },
+    {
+      "group": "ttnv",
+      "query": "TTNV ngành ATTT là bao nhiêu",
+      "intent": "ttnv_query",
+      "mode": "query",
+      "source": "diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **TTNV ngành An toàn Thông tin (ATTT)**\n\n| Mục | Thông tin |\n|---|---|\n| Mã ngành | 7480202 |\n| TTNV tối đa | <=5 |\n| Điểm chuẩn THPT 2025 | 26.1 |\n\nNếu bạn có điểm đúng bằng mức chuẩn 26.1, bạn cần đặt ngành này từ **NV1 đến NV5** để có cơ hội trúng tuyển."
+    },
+    {
+      "group": "major_list",
+      "query": "PTIT có những ngành nào",
+      "intent": "major_list",
+      "mode": "query",
+      "source": "danh_muc_nganh_dao_tao.md, diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Danh sách ngành đào tạo PTIT**\n\nMình đã gom các ngành theo từng nhóm để bạn dễ theo dõi hơn:\n\n**Nhóm Công nghệ**\n\n| Ngành | Mã | Điểm chuẩn 2025 | TTNV |\n|---|---|---:|---:|\n| Công nghệ Thông tin | 7480201 | 26.55 | <=5 |\n| Khoa học Máy tính | 7480101 | 26.40 | <=3 |\n| Công nghệ Thông tin Chất lượng cao | 7480201_CLC | 26.15 | <=2 |\n| An toàn Thông tin | 7480202 | 26.10 | <=5 |\n| Công nghệ Internet vạn vật (IoT) | 7520207_IoT | 25.20 | <=3 |\n| Kỹ thuật Điện tử Viễn thông | 7520207 | 25.10 | "
+    },
+    {
+      "group": "comparison",
+      "query": "So sánh CNTT và ATTT",
+      "intent": "comparison",
+      "mode": "query",
+      "source": "danh_muc_nganh_dao_tao.md, diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **So sánh ngành tại PTIT**\n\nMình đặt hai ngành cạnh nhau để bạn nhìn khác biệt rõ hơn:\n\n| Tiêu chí | Ngành 1 | Ngành 2 |\n|---|---|---|\n| Tên ngành | Công nghệ Thông tin (CNTT) | An toàn Thông tin (ATTT) |\n| Mã ngành | 7480201 | 7480202 |\n| Điểm chuẩn THPT 2025 | 26.55 | 26.1 |\n| TTNV | <=5 | <=5 |\n| Tổ hợp xét tuyển | Toán, Lí, Hóa (A00) / Toán, Lí, Anh (A01) / Toán, Lí, Tin (X06) / Toán, Tin, Anh (X26) | Toán, Lí, Hóa (A00) / Toán, Lí, Anh (A01) / Toán, Lí, Tin (X06) / Toán, Tin, Anh (X26) |\n"
+    },
+    {
+      "group": "tuition",
+      "query": "Học phí PTIT bao nhiêu",
+      "intent": "tuition",
+      "mode": "query",
+      "source": "hoc_phi_hoc_bong.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Học phí PTIT 2025**\n\nBạn có thể tham khảo nhanh theo từng nhóm chương trình như sau:\n\n| Nhóm chương trình | Học phí tham khảo |\n|---|---:|\n| Kỹ thuật/Công nghệ đại trà | 25–35 triệu đồng/năm |\n| Kinh tế, Truyền thông | 25–30 triệu đồng/năm |\n| Chất lượng cao (CLC) | 35–45 triệu đồng/năm |\n\nNếu bạn muốn, mình có thể tra tiếp phần `học bổng` hoặc `học phí` theo từng nhóm ngành."
+    },
+    {
+      "group": "scholarship",
+      "query": "Học bổng PTIT như thế nào",
+      "intent": "tuition",
+      "mode": "query",
+      "source": "hoc_phi_hoc_bong.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Học bổng PTIT**\n\nNếu bạn đang quan tâm tới hỗ trợ tài chính, đây là các nhóm học bổng nổi bật của PTIT:\n\n| Loại học bổng | Số lượng/Giá trị | Điều kiện nổi bật |\n|---|---|---|\n| Học bổng đặc biệt | 30 suất, tới 500 triệu đồng/suất | Giải quốc gia/quốc tế hoặc điểm THPT từ 29.0 trở lên |\n| Học bổng toàn phần | 50 suất, tới 250 triệu đồng/suất | Giải học sinh giỏi phù hợp hoặc điểm THPT từ 28.5 trở lên |\n| Học bổng bán phần | 50 suất, tới 100 triệu đồng/suất | Giải học sinh giỏi phù hợp hoặc đ"
+    },
+    {
+      "group": "admission_all",
+      "query": "PTIT có những phương thức tuyển sinh nào",
+      "intent": "admission_method",
+      "mode": "query",
+      "source": "phuong_thuc.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Các phương thức tuyển sinh PTIT 2026**\n\n| Phương thức | Nội dung chính | Điều kiện/Ngưỡng cơ bản |\n|---|---|---|\n| PT1 | Xét tuyển tài năng | Xét tuyển thẳng hoặc hồ sơ năng lực; học lực lớp 10-12 từ 7.5 trở lên, hạnh kiểm Khá trở lên cho diện hồ sơ năng lực |\n| PT2 | Chứng chỉ quốc tế SAT/ACT | SAT từ 1130/1600 hoặc ACT từ 25/36 trở lên |\n| PT3 | Đánh giá năng lực/tư duy | HSA từ 75/150, TSA từ 50/100, SPT từ 15/30, APT từ 600/1200 trở lên |\n| PT4 | Chứng chỉ tiếng Anh + học bạ | IELTS 5.5 "
+    },
+    {
+      "group": "admission_conditions_pt4",
+      "query": "Điều kiện PT4 là gì",
+      "intent": "admission_method_conditions",
+      "mode": "query",
+      "source": "phuong_thuc.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Điều kiện chính của PT4 (chứng chỉ tiếng Anh + học bạ)**  \n\n- Cần có một trong các chứng chỉ còn hạn:\n- **IELTS từ 5.5 trở lên**\n- **TOEFL iBT từ 65 trở lên**\n- **TOEFL ITP từ 513 trở lên**\n- Đồng thời cần có:\n- **Kết quả trung bình chung học tập lớp 10, 11, 12 từ 7.5 trở lên**\n- **Hạnh kiểm Khá trở lên**\n\nSau khi đủ điều kiện, điểm xét tuyển PT4 sẽ được đối chiếu với mốc điểm của từng ngành."
+    },
+    {
+      "group": "method_ineligible_pt4",
+      "query": "Em có 26 điểm học bạ và IELTS 4.0 có đỗ được vào ngành kinh tế nào không",
+      "intent": "admission_method_ineligible",
+      "mode": "query",
+      "source": "phuong_thuc.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Đánh giá điều kiện theo PT4 (chứng chỉ tiếng Anh + học bạ)**\n\nBạn đang có **26.0 điểm học bạ** và **IELTS 4.0**.\n\nBạn **chưa đủ điều kiện PT4** vì IELTS hiện là **4.0**, trong khi mức tối thiểu là **5.5**.\nLưu ý: PT4 còn yêu cầu **kết quả trung bình chung lớp 10-12 từ 7.5 trở lên** và **hạnh kiểm Khá trở lên**.\n\nVì vậy, với dữ liệu hiện có thì bạn **chưa thể xét vào nhóm ngành Kinh tế bằng phương thức này**.\nNếu bạn muốn, mình có thể kiểm tra giúp bạn theo phương thức khác như **PT5, SAT, HS"
+    },
+    {
+      "group": "method_eligible_pt4",
+      "query": "Em được 24 điểm học bạ và IELTS 7.0 liệu có thể đỗ vào ngành công nghệ nào ko",
+      "intent": "admission_method_recommendation",
+      "mode": "query",
+      "source": "phuong_thuc.md, diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "🎯 **Đánh giá theo PT4 (chứng chỉ tiếng Anh + học bạ) cho nhóm ngành Công nghệ:**\nBạn có **24.00 điểm học bạ** và **IELTS 7.0**, được cộng **1.50 điểm**, nên điểm xét tuyển tạm tính theo PT4 là **25.50**.\n💪 Thử sức\nBạn còn thiếu một khoảng nhất định\n\n| Ngành | Mốc tham chiếu | Chênh lệch | TTNV |\n|---|---:|---:|---:|\n| Trí tuệ nhân tạo vạn vật (AIoT) | 27.24 | -1.74 | <=2 |\n| Công nghệ kỹ thuật điện, điện tử | 27.60 | -2.10 | <=4 |\n| Kỹ thuật Điện tử Viễn thông | 27.64 | -2.14 | <=2 |\n| Kỹ thuật "
+    },
+    {
+      "group": "method_sat",
+      "query": "SAT 1320 có thể vào ngành công nghệ nào",
+      "intent": "admission_method_recommendation",
+      "mode": "query",
+      "source": "phuong_thuc.md, diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "🎯 **Đánh giá theo SAT cho nhóm ngành Công nghệ:**\nMình đang đối chiếu mức **1320.00** của bạn theo phương thức **SAT**.\n⚠️ Cần cân nhắc\nBạn đang sát mức tham chiếu\n\n| Ngành | Mốc tham chiếu | Chênh lệch | TTNV |\n|---|---:|---:|---:|\n| Trí tuệ nhân tạo vạn vật (AIoT) | 1324.29 | -4.29 | <=2 |\n| Công nghệ kỹ thuật điện, điện tử | 1340.00 | -20.00 | <=4 |\n| Kỹ thuật Điện tử Viễn thông | 1341.43 | -21.43 | <=2 |\n| Kỹ thuật Điều khiển và Tự động hóa | 1341.43 | -21.43 | <=2 |\n| Công nghệ Internet vạn"
+    },
+    {
+      "group": "method_hsa_ineligible",
+      "query": "HSA 72 có vào được ngành công nghệ nào không",
+      "intent": "admission_method_ineligible",
+      "mode": "query",
+      "source": "phuong_thuc.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Đánh giá điều kiện theo HSA**\n\nBạn **chưa đủ điều kiện HSA** vì hiện mới đạt **72.0**, trong khi tối thiểu cần **75**.\n\nVì vậy, với dữ liệu hiện có thì bạn **chưa thể xét vào nhóm ngành Công nghệ bằng phương thức này**.\nNếu bạn muốn, mình có thể kiểm tra giúp bạn theo phương thức khác như **PT5, SAT, HSA, TSA...** để xem còn lựa chọn nào phù hợp hơn."
+    },
+    {
+      "group": "method_hsa_eligible",
+      "query": "HSA 95 có thể xét ngành công nghệ nào",
+      "intent": "admission_method_recommendation",
+      "mode": "query",
+      "source": "phuong_thuc.md, diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "🎯 **Đánh giá theo HSA cho nhóm ngành Công nghệ:**\nMình đang đối chiếu mức **95.00** của bạn theo phương thức **HSA**.\n✅ Có khả năng cạnh tranh tốt\nBạn đang đạt hoặc vượt mức tham chiếu\n\n| Ngành | Mốc tham chiếu | Chênh lệch | TTNV |\n|---|---:|---:|---:|\n| Trí tuệ nhân tạo vạn vật (AIoT) | 94.13 | +0.87 | <=2 |\n\n⚠️ Cần cân nhắc\nBạn đang sát mức tham chiếu\n\n| Ngành | Mốc tham chiếu | Chênh lệch | TTNV |\n|---|---:|---:|---:|\n| Công nghệ kỹ thuật điện, điện tử | 96.00 | -1.00 | <=4 |\n| Kỹ thuật Điện"
+    },
+    {
+      "group": "method_tsa",
+      "query": "TSA 70 có thể vào ngành nào",
+      "intent": "admission_method_recommendation",
+      "mode": "query",
+      "source": "phuong_thuc.md, diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "🎯 **Đánh giá theo TSA:**\nMình đang đối chiếu mức **70.00** của bạn theo phương thức **TSA**.\n✅ Có khả năng cạnh tranh tốt\nBạn đang đạt hoặc vượt mức tham chiếu\n\n| Ngành | Mốc tham chiếu | Chênh lệch | TTNV |\n|---|---:|---:|---:|\n| Thương mại Điện tử | 70.00 | +0.00 | <=5 |\n| Công nghệ Thông tin Chất lượng cao (CNTT CLC) | 70.00 | +0.00 | <=2 |\n| Công nghệ Đa phương tiện | 69.79 | +0.21 | <=3 |\n| Công nghệ Internet vạn vật (IoT) | 69.00 | +1.00 | <=3 |\n| Kỹ thuật Điện tử Viễn thông | 68.96 | +1.0"
+    },
+    {
+      "group": "method_spt",
+      "query": "SPT 22 xét được ngành nào",
+      "intent": "admission_method_recommendation",
+      "mode": "query",
+      "source": "phuong_thuc.md, diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "🎯 **Đánh giá theo SPT:**\nMình đang đối chiếu mức **22.00** của bạn theo phương thức **SPT**.\n✅ Có khả năng cạnh tranh tốt\nBạn đang đạt hoặc vượt mức tham chiếu\n\n| Ngành | Mốc tham chiếu | Chênh lệch | TTNV |\n|---|---:|---:|---:|\n| Marketing | 22.00 | +0.00 | <=5 |\n| Trí tuệ nhân tạo vạn vật (AIoT) | 21.93 | +0.07 | <=2 |\n| Công nghệ Tài chính (Fintech) | 21.80 | +0.20 | <=3 |\n| Báo chí số | 21.50 | +0.50 | <=2 |\n| Quản trị Kinh doanh (QTKD) | 21.50 | +0.50 | <=4 |\n\n⚠️ Cần cân nhắc\nBạn đang sát m"
+    },
+    {
+      "group": "method_apt",
+      "query": "APT 900 có thể xét ngành kinh tế nào",
+      "intent": "admission_method_recommendation",
+      "mode": "query",
+      "source": "phuong_thuc.md, diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "🎯 **Đánh giá theo APT cho nhóm ngành Kinh tế:**\nMình đang đối chiếu mức **900.00** của bạn theo phương thức **APT**.\n✅ Có khả năng cạnh tranh tốt\nBạn đang đạt hoặc vượt mức tham chiếu\n\n| Ngành | Mốc tham chiếu | Chênh lệch | TTNV |\n|---|---:|---:|---:|\n| Thương mại Điện tử | 890.00 | +10.00 | <=5 |\n| Marketing | 870.00 | +30.00 | <=5 |\n| Công nghệ Tài chính (Fintech) | 860.00 | +40.00 | <=3 |\n| Quản trị Kinh doanh (QTKD) | 850.00 | +50.00 | <=4 |\n| Kế toán | 840.00 | +60.00 | <=6 |\n\nTổng thể, bạ"
+    },
+    {
+      "group": "method_pt1_conditions",
+      "query": "Hồ sơ năng lực PT1 cần điều kiện gì",
+      "intent": "admission_method_conditions",
+      "mode": "query",
+      "source": "phuong_thuc.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Điều kiện chính của PT1 (xét tuyển tài năng/hồ sơ năng lực)**  \n\n- PT1 gồm diện **xét tuyển thẳng** và **xét tuyển dựa vào hồ sơ năng lực**.\n- Với diện **hồ sơ năng lực**, thí sinh cần có **một trong các điều kiện thành tích phù hợp** theo thông báo của PTIT.\n- Đồng thời cần có:\n- **Kết quả trung bình chung học tập lớp 10, 11, 12 từ 7.5 trở lên**\n- **Hạnh kiểm Khá trở lên**\n\nNếu bạn muốn, mình có thể giải thích kỹ hơn PT1 theo hướng `điều kiện`, `cách tính điểm`, hoặc xem hồ sơ của bạn có ph"
+    },
+    {
+      "group": "score_recommendation_kinh_te",
+      "query": "Em được 24 điểm có thể vào ngành kinh tế nào",
+      "intent": "score_recommendation",
+      "mode": "query",
+      "source": "diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "🎯 **Dựa trên 24.0 điểm THPT của bạn cho nhóm ngành Kinh tế (điểm chuẩn 2025):**\n\n\n⚠️ Sát điểm chuẩn (Thiếu dưới 1 điểm)\n\n| Ngành | Điểm chuẩn | Chênh lệch | TTNV | Loại | Đánh giá |\n|---|---:|---:|---:|---|---|\n| Quản trị Kinh doanh Chất lượng cao | 25.00 | -1.00 | <=3 | Chất lượng cao | Cân nhắc |\n\n💪 Thử sức (Thiếu từ 1 đến 3 điểm)\n\n| Ngành | Điểm chuẩn | Chênh lệch | TTNV | Loại | Đánh giá |\n|---|---:|---:|---:|---|---|\n| Kế toán | 25.35 | -1.35 | <=6 | Đại trà | Khá khó |\n| Quản trị Kinh doan"
+    },
+    {
+      "group": "interest",
+      "query": "Em thích lập trình và dữ liệu thì nên chọn ngành nào",
+      "intent": "interest_recommendation",
+      "mode": "query",
+      "source": "danh_muc_nganh_dao_tao.md, diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "💡 **Gợi ý ngành theo sở thích của bạn**\n\nDựa trên mô tả của bạn, mình thấy các ngành sau là gần nhất:\n\n| Ngành | Điểm chuẩn 2025 | TTNV | Gợi ý |\n|---|---:|---:|---|\n| Công nghệ Thông tin | 26.55 | <=5 | Phù hợp với sở thích của bạn |\n| Khoa học Máy tính | 26.40 | <=3 | Phù hợp với sở thích của bạn |\n\nNếu bạn muốn, mình có thể phân tích tiếp ngành nào hợp hơn với mức điểm của bạn."
+    },
+    {
+      "group": "career_major",
+      "query": "Cơ hội việc làm ngành Marketing ra sao",
+      "intent": "career",
+      "mode": "query",
+      "source": "co_hoi_viec_lam.md, danh_muc_nganh_dao_tao.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Cơ hội việc làm ngành Marketing**\n\nMarketing là ngành thiên về: Chuyên về chiến lược marketing, quảng cáo số, SEO/SEM.\n\n| Mục | Thông tin |\n|---|---|\n| Điểm chuẩn THPT 2025 | 25.9 |\n| Nhóm ngành | Kinh tế |\n| Mặt bằng cơ hội việc làm | Khá tốt trong nhóm kinh tế của PTIT |\n| Mức lương tham khảo theo nhóm ngành | Khoảng 15–25 triệu/tháng |\n| Kỹ năng cần chú trọng | Digital marketing, Social media, Analytics |\n\nNếu bạn muốn, mình có thể so sánh thêm triển vọng của ngành này với một ngành khác "
+    },
+    {
+      "group": "career_general",
+      "query": "Ra trường dễ xin việc không",
+      "intent": "career",
+      "mode": "query",
+      "source": "co_hoi_viec_lam.md, danh_muc_nganh_dao_tao.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Cơ hội việc làm tại PTIT**\n\nNhìn chung, PTIT có lợi thế khá tốt về kết nối doanh nghiệp và đầu ra việc làm:\n\n| Nội dung | Thông tin |\n|---|---|\n| Đối tác doanh nghiệp | Google, Microsoft, Intel, Samsung, Viettel, VNPT, FPT, Bosch, Cowell Asia... |\n| Cơ hội thực tập | 500+ offer internship mỗi năm ở nhiều doanh nghiệp |\n| Mức lương tham khảo ngành Công nghệ | Khoảng 20–40 triệu/tháng |\n| Mức lương tham khảo ngành Kinh tế | Khoảng 15–25 triệu/tháng |\n| Mức lương tham khảo ngành Truyền thông | "
+    },
+    {
+      "group": "forecast_major",
+      "query": "2026 liệu ngành CNTT có tăng điểm không",
+      "intent": "forecast",
+      "mode": "query",
+      "source": "diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "Mình chưa có dữ liệu chính thức để dự đoán **điểm chuẩn Công nghệ Thông tin (CNTT)** cho năm tới.\n\nHiện mình chỉ có mốc tham chiếu chắc chắn là **điểm chuẩn 2025 của ngành này: 26.55 điểm**.\n\nVì điểm chuẩn năm sau còn phụ thuộc vào số lượng hồ sơ, độ khó đề thi và mặt bằng điểm chung, nên mình không nên đoán một con số cụ thể. Cách an toàn hơn là bạn:\n- lấy mốc 26.55 làm tham chiếu\n- cố gắng tạo khoảng dư điểm nếu có thể\n- chuẩn bị thêm phương án ở các ngành gần hoặc phương thức khác\n\nBạn cứ tập"
+    },
+    {
+      "group": "special_major_without_cutoff",
+      "query": "Hỏi điểm chuẩn ngành game",
+      "intent": "cutoff_query",
+      "mode": "query",
+      "source": "diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **Thiết kế & Phát triển Game** (Mã: 7329001_GAM)\n\nHiện trong bộ dữ liệu điểm chuẩn mình đang dùng **chưa có điểm chuẩn chính thức** cho ngành/chương trình này, nên mình chưa thể trả một con số chính xác.\n\nNếu bạn muốn, mình vẫn có thể:\n- giới thiệu chi tiết ngành này\n- kiểm tra tổ hợp xét tuyển và đặc điểm chương trình\n- gợi ý ngành gần nhất có dữ liệu điểm chuẩn để bạn tham khảo"
+    },
+    {
+      "group": "llm_contextual",
+      "query": "Nếu em thiên về lập trình nhưng cũng thích bảo mật thì nên cân nhắc CNTT hay ATTT hơn",
+      "intent": "comparison",
+      "mode": "query",
+      "source": "danh_muc_nganh_dao_tao.md, diem_chuan_chi_tiet_2025.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "📌 **So sánh ngành tại PTIT**\n\nMình đặt hai ngành cạnh nhau để bạn nhìn khác biệt rõ hơn:\n\n| Tiêu chí | Ngành 1 | Ngành 2 |\n|---|---|---|\n| Tên ngành | Công nghệ Thông tin (CNTT) | An toàn Thông tin (ATTT) |\n| Mã ngành | 7480201 | 7480202 |\n| Điểm chuẩn THPT 2025 | 26.55 | 26.1 |\n| TTNV | <=5 | <=5 |\n| Tổ hợp xét tuyển | Toán, Lí, Hóa (A00) / Toán, Lí, Anh (A01) / Toán, Lí, Tin (X06) / Toán, Tin, Anh (X26) | Toán, Lí, Hóa (A00) / Toán, Lí, Anh (A01) / Toán, Lí, Tin (X06) / Toán, Tin, Anh (X26) |\n"
+    },
+    {
+      "group": "llm_fallback",
+      "query": "Sinh viên PTIT thường tham gia hoạt động gì ngoài học tập",
+      "intent": "general_qa",
+      "mode": "chat",
+      "source": "gioi_thieu_ptit.md",
+      "passed": true,
+      "issues": [],
+      "reply_preview": "Trong dữ liệu mình tra được, thông tin phù hợp nhất là:\n\n# GIỚI THIỆU VỀ PTIT (Học viện Công nghệ Bưu chính Viễn thông)\n## Q1: PTIT là gì? PTIT là trường gì?\n**Câu trả lời:**\nPTIT (Posts and Telecommunications Institute of Technology) - Học viện Công nghệ Bưu chính Viễn thông là một trường Đại học công lập hàng đầu Việt Nam. Học viện được biết đến với sứ mệnh cung cấp nguồn nhân lực chất lượng cao trong lĩnh vực công nghệ số và kỹ thuật.\n**Thông tin cơ bản:**\n- Loại trường: Đại học công lập\n- Ch"
+    }
+  ]
+}

@@ -46,7 +46,7 @@ PTIT là trường Đại học tiên phong trong đào tạo các ngành công 
 
 PTIT được tổ chức theo 3 khối ngành chính:
 
-### 🔧 *Khối Công nghệ (Technology)**
+###  *Khối Công nghệ (Technology)**
 Các ngành: Công nghệ Thông tin, An toàn Thông tin, Khoa học Máy tính, Kỹ thuật Điện tử, Viễn thông, Trí tuệ Nhân tạo, Vi mạch Bán dẫn, Kỹ thuật Dữ liệu, IoT, etc.
 
 ###  **Khối Kinh tế & Quản lý (Business)**

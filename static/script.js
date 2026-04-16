@@ -531,7 +531,7 @@ function renderMessageItem(msg, { animate = false, onComplete = null, index = -1
       return { wrapper, bubble: textarea }
     }
 
-    wrapper.className = "user-msg-wrapper flex flex-col items-end gap-1"
+    wrapper.className = "user-msg-wrapper flex flex-col items-end gap-1 message-pop-in"
     
     const bubble = document.createElement("div")
     bubble.className = "max-w-[85%] whitespace-pre-wrap rounded-2xl border border-gray-200 bg-gray-100 px-4 py-2 text-sm text-gray-900"
@@ -572,7 +572,7 @@ function renderMessageItem(msg, { animate = false, onComplete = null, index = -1
     return { wrapper, bubble }
   }
 
-  wrapper.className = "assistant-msg-wrapper flex flex-col items-start gap-1"
+  wrapper.className = "assistant-msg-wrapper flex flex-col items-start gap-1 message-pop-in"
 
   const bubble = document.createElement("div")
   bubble.className = "markdown max-w-[85%] whitespace-pre-wrap px-1 py-1 text-sm text-gray-900"
@@ -687,8 +687,8 @@ function renderMessageItem(msg, { animate = false, onComplete = null, index = -1
   bubble.innerHTML = ""
   let i = 0
   const chunk = 3
-  const tick = 10
-  function type() {
+  const tick = 10 // Fast speed reverted back
+function type() {
     if (currentTypewriterTimeout === "STOPPED") {
       actions.classList.remove("is-typing")
       currentTypewriterTimeout = null
@@ -697,7 +697,7 @@ function renderMessageItem(msg, { animate = false, onComplete = null, index = -1
     }
 
     if (i < text.length) {
-      const partial = text.slice(0, i)
+      const partial = text.slice(0, i + 1)
       bubble.innerHTML = marked.parse(partial)
       i += chunk
       scrollBottom()
